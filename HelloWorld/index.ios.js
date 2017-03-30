@@ -1,37 +1,48 @@
-import React, { Component } from 'react';
-import { AppRegistry, Navigator, Text, View } from 'react-native';
+import React, { Component, PropTypes } from 'react';
+import { NavigatorIOS, Text, TouchableHighlight, View, AppRegistry } from 'react-native';
 
-import MyScene from './MyScene';
+class MyScene extends Component {
+    static propTypes = {
+        title: PropTypes.string.isRequired,
+        navigator: PropTypes.object.isRequired,
+    }
+
+    constructor(props, context) {
+        super(props, context);
+        this._onForward = this._onForward.bind(this);
+    }
+
+    _onForward() {
+        this.props.navigator.push({
+            title: 'Scene ' + nextIndex,
+        });
+    }
+
+    render() {
+        return (
+            <View>
+                <Text>Current Scene: { this.props.title }</Text>
+                <TouchableHighlight onPress={this._onForward}>
+                    <Text>Tap me to load the next scene</Text>
+                </TouchableHighlight>
+            </View>
+        )
+    }
+}
 
 class HelloWorld extends Component {
     render() {
         return (
-            <Navigator
-                initialRoute={{ title: 'My Initial Scene', index: 0 }}
-                renderScene={(route, navigator) =>
-          <MyScene
-            title={route.title}
-
-            // Function to call when a new scene should be displayed
-            onForward={ () => {
-              const nextIndex = route.index + 1;
-              navigator.push({
-                title: 'Scene ' + nextIndex,
-                index: nextIndex,
-              });
-            }}
-
-            // Function to call to go back to the previous scene
-            onBack={() => {
-              if (route.index > 0) {
-                navigator.pop();
-              }
-            }}
-          />
-        }
+            <NavigatorIOS
+                initialRoute={{
+          component: MyScene,
+          title: 'My Initial Scene',
+        }}
+                style={{flex: 1}}
             />
         )
     }
 }
+
 
 AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
